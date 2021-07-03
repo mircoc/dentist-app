@@ -93,3 +93,31 @@ export class AlreadyExistsError extends AppError {
         super(options);
     }
 }
+
+export class InvalidCredentialError extends AppError {
+    constructor(logInfo: AppErrorOptions["logInfo"]) {
+        const options: AppErrorOptions = {
+            code: "INVALID_CREDENTIAL_ERROR",
+            statusCode: 400,
+            details: {
+                cause: "INVALID_CREDENTIAL"
+            },
+            logInfo,
+        };
+        super(options);
+    }
+}
+
+export class InvalidTokenError extends AppError {
+    constructor(logInfo: AppErrorOptions["logInfo"]) {
+        const options = {
+            code: "INVALID_TOKEN_ERROR",
+            statusCode: 401,
+            details: {
+                cause: "INVALID_TOKEN"
+            },
+            logInfo,
+        };
+        super(options);
+    }
+}

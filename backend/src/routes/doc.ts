@@ -20,6 +20,7 @@ export const swaggerConfiguration: SwaggerOptions = {
         tags: [
             { name: "admin", description: "Admin related end-points" },
             { name: "user", description: "User related end-points" },
+            { name: "auth", description: "Authentication related end-points" },
         ],
         definitions: {
             User: schema.definitions.User,

@@ -12,6 +12,25 @@ export interface User {
     fiscalCode: string;
 }
 
+export interface UserAuth extends User {
+    password: string;
+    tokens: string[];
+    role: "user"|"admin";
+}
+
 export type UserCreationBody = User;
 
 export type UserUpdateBody = Partial<Omit<User, 'userName'>>;
+
+export interface LoginBody {
+    username: string;
+    password: string;
+}
+
+export interface LoginResponse {
+    token: string;
+}
+
+export interface LogoutResponse {
+    success: true;
+}

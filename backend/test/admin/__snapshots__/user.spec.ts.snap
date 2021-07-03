@@ -1,0 +1,30 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Admin user handling Successfully list created users 1`] = `
+Array [
+  Object {
+    "bornDate": "1978-07-06",
+    "fiscalCode": "ABCDEF12A11A123A",
+    "name": "Mirco",
+    "surname": "Cipriani",
+    "telephone": "392012345",
+    "userName": "mircocip",
+  },
+  Object {
+    "bornDate": "1938-07-06",
+    "fiscalCode": "XBCDEF12A11A123A",
+    "name": "Pippo",
+    "surname": "Baudo",
+    "telephone": "399012345",
+    "userName": "pippobaudo",
+  },
+  Object {
+    "bornDate": "1978-07-06",
+    "fiscalCode": "ABCDED12A11A123A",
+    "name": "Mirco",
+    "surname": "Cipriani",
+    "telephone": "390012345",
+    "userName": "myadmin",
+  },
+]
+`;
