@@ -4,14 +4,15 @@ import { Logger } from "pino";
 import { BookingEntity } from "../models/booking";
 import { partitionKey, sortKey } from "../models";
 import { EntityAttributes } from "dynamodb-toolbox/dist/classes/Entity";
-import { ListResult, UserEntity, UserSchema } from "../models/user";
-import { User, UserCreationBody, UserUpdateBody } from "../typings/model/user";
-import { AlreadyExistsError, NotFoundError, NotFoundErrorCause } from "../utils/error";
+import { generateToken, ListResult, UserAuthEntity, UserEntity, UserSchema, verifyPassword, verifyToken } from "../models/user";
+import { LoginResponse, User, UserAuth, UserCreationBody, UserUpdateBody } from "../typings/model/user";
+import { AlreadyExistsError, InvalidCredentialError, InvalidTokenError, NotFoundError, NotFoundErrorCause } from "../utils/error";
 
 export interface DynamoDBOptions {
     endpoint: string;
     region: string;
     tableName: string;
+    jwtSecret: string;
 }
 export class DynamoDB {
     private table: Table;
@@ -53,7 +54,7 @@ export class DynamoDB {
         throw err;
     }
 
-    async createUser(user: UserCreationBody): Promise<UserEntity> {
+    async createUser(user: UserCreationBody): Promise<UserAuth> {
         try {
             const entity = this.getUserEntity();
             const res = await entity.put(
@@ -65,8 +66,6 @@ export class DynamoDB {
                     conditions: { attr: entity.partitionKey, exists: false },
                 },
             );
-            // FIXME: check what's inside res and return
-            debugger;
             this.logger.info({ res }, `Item created: ${user.userName}; ${JSON.stringify(res)}`);
             const resGet = await entity.get(user);
             this.logger.info(
@@ -160,7 +159,120 @@ export class DynamoDB {
         }
     }
 
-    getUserEntity(): UserEntity {
+    async getUserByCredentials(userName: string, password: string): Promise<UserAuth> {
+        try {
+            if (userName && password) {
+                const entity = this.getUserEntity();
+                const resGet = await entity.get({
+                    userName,
+                });
+                this.logger.info({ resGet }, `Item loaded: ${userName}; ${JSON.stringify(resGet)}`);
+                const userPass = resGet.Item.password;
+                if (userPass && verifyPassword(userPass, password)) {
+                    return resGet.Item;
+                }
+            }
+        } catch (err) {
+            this.logger.debug({ err }, `Credential not found or error: ${userName};`);
+        }
+        throw new InvalidCredentialError({
+            userName
+        });
+    }
+
+    async getUserByToken(token: string): Promise<UserAuth> {
+        try {
+            const decodedToken = verifyToken(token, this.options.jwtSecret);
+            // FIXME: check expire of token and clear it
+            const userName = decodedToken.userName;
+            const entity = this.getUserEntity();
+            const resQuery = await entity.query(`user#${userName}`, {
+                filters: [
+                    { attr: "tokens", contains: token }
+                ]
+            });
+            this.logger.info({ resQuery }, `Item loaded: ${userName}; ${JSON.stringify(resQuery)}`);
+            if (resQuery.Items && resQuery.Items.length > 0) {
+                return resQuery.Items[0];
+            }
+        } catch (err) {
+            this.logger.debug({ err }, `Token not found or error: ${token};`);
+        }
+        throw new InvalidTokenError({
+            token
+        });
+    }
+
+    /**
+     * add a new user token to an authenticated user (with username and password)
+     * @param user 
+     * @returns 
+     */
+    async updateUserLogin(user: UserAuth): Promise<LoginResponse> {
+        const userName = user.userName;
+        const token = await generateToken(userName, this.options.jwtSecret);
+        const entity = this.getUserEntity();
+        const res: any = await entity.update(
+            {
+                userName,
+                tokens: {
+                    "$add": [token],
+                } as unknown as string[] // sorry but there is a WRONG typing on lib ...
+            },
+            {
+                returnValues: "ALL_NEW",
+            },
+        );
+        this.logger.info({ res }, `Item updated: ${userName}; ${JSON.stringify(res)}`);
+        return { token };
+    }
+
+    /**
+     * reset user password, be careful, we need to add a verification
+     * @param user 
+     * @returns 
+     */
+     async resetUserPassword(userName: string, newPassword: string): Promise<boolean> {
+        const entity = this.getUserEntity();
+        const res: any = await entity.update(
+            {
+                userName,
+                password: newPassword,
+            },
+            {
+                returnValues: "ALL_NEW",
+            },
+        );
+        this.logger.info({ res }, `Item updated: ${userName}; ${JSON.stringify(res)}`);
+        return true;
+    }
+
+    /**
+     * remove an user token to an authenticated user
+     * @param user 
+     * @returns 
+     */
+     async updateUserLogout(user: UserAuth, token: string): Promise<boolean> {
+        const userName: string = user.userName;
+        const entity = this.getUserEntity();
+        const res: any = await entity.update(
+            {
+                userName,
+                tokens: {
+                    "$delete": [token],
+                } as unknown as string[] // sorry but there is a WRONG typing on lib ...
+            },
+            {
+                returnValues: "ALL_NEW",
+            },
+        );
+        // FIXME: check what's inside res and return
+        debugger;
+        this.logger.info({ res }, `Item updated: ${userName}; ${JSON.stringify(res)}`);
+        return true;
+    }
+
+    getUserEntity(): UserAuthEntity {
         this.logger.debug(`creating entity User from table ${this.table.name}`);
         const device = new Entity({
             // Specify entity name
@@ -200,6 +312,9 @@ export class DynamoDB {
                 telephone: { type: "string" },
                 fiscalCode: { type: "string" },
                 bornDate: { type: "string" },
+
+                password: { type: "string" },
+                tokens: { type: 'set', setType: 'string' },
 
                 ...this.getCommonAttributes(),
             },

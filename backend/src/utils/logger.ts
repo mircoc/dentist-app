@@ -1,4 +1,5 @@
 import pino from "pino";
+import { FeatureDisableInTest, isInTestRunner } from "./jestHelper";
 
 
 const pinoLogger = pino({
@@ -10,7 +11,8 @@ const pinoLogger = pino({
         //     }
         //     method.apply(this, args as [msg: string, ...args: any[]]);
         // }
-    }
+    },
+    enabled: !isInTestRunner(FeatureDisableInTest.LOGGING),
 });
 
 export function getLogger(module: string): pino.Logger {

@@ -9,7 +9,7 @@ const logger = getLogger("index");
 installFatalHandlers(logger);
 
 
-(async (): Promise<FastifyInstance> => startApp({
+(async () => startApp({
     http: {
         port: getConfigNumber("HTTP_PORT"),
         host: getConfigString("HTTP_HOST"),
@@ -18,7 +18,8 @@ installFatalHandlers(logger);
     dynamoDB: {
         region: getConfigString("DYNAMODB_REGION"),
         endpoint: getConfigString("DYNAMODB_ENDPOINT"),
-        tableName: `${getConfigString("DYNAMODB_PREFIX_TABLE")}dentist`
+        tableName: `${getConfigString("DYNAMODB_PREFIX_TABLE")}dentist`,
+        jwtSecret: getConfigString("JWT_SECRET"),
     },
 }))().catch((error) => {
     logger.fatal(error, `caught error: ${error}`);

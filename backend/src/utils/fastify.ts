@@ -27,6 +27,7 @@ export async function init<T extends BaseServicesInstances>(
             details: {
                 cause: notFoundError.details.cause,
             },
+            error: true,
         };
         app.log.warn(error, `route not found: ${method} ${url}`);
         reply.code(notFoundError.statusCode).send(error);
@@ -44,6 +45,7 @@ export async function init<T extends BaseServicesInstances>(
             reply.code(error.statusCode || 500).send({
                 code: error.code,
                 details: error.details,
+                error: true,
             });
         } else {
             app.log.error(error, `internal error: ${error.message}`);
@@ -52,6 +54,7 @@ export async function init<T extends BaseServicesInstances>(
                 details: {
                     cause: "INTERNAL_ERROR",
                 },
+                error: true,
             });
         }
     });

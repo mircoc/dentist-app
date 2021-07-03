@@ -5,6 +5,7 @@ import routes from "./routes";
 import { swaggerConfiguration } from "./routes/doc";
 import { DynamoDB, DynamoDBOptions } from "./services/dynamodb";
 import { ServiceInstances } from "./typings/service";
+import { decorateAppWithAuthentication } from "./utils/auth";
 import { init, start } from "./utils/fastify";
 import { getLogger } from "./utils/logger";
 
@@ -18,18 +19,13 @@ export interface AppConfig {
     dynamoDB: DynamoDBOptions;
 }
 
-export async function startApp(appConfig: AppConfig): Promise<FastifyInstance> {
-    // FIXME: init dynamodb service
+export async function startApp(appConfig: AppConfig): Promise<[FastifyInstance, ServiceInstances]> {
+    // init dynamodb service
     const dynamoDB = new DynamoDB(
         getLogger("dynamoDb"),
-        {
-            region: appConfig.dynamoDB.region,
-            endpoint: appConfig.dynamoDB.endpoint,
-            tableName: appConfig.dynamoDB.tableName,
-        },
-    )
-    debugger;
-    // FIXME: define services
+        appConfig.dynamoDB,
+    );
+
     const services: ServiceInstances = {
         dynamoDB,
     };
@@ -44,10 +40,14 @@ export async function startApp(appConfig: AppConfig): Promise<FastifyInstance> {
 
     // add documentation route for the following routes
     server.register(fastifySwagger, swaggerConfiguration);
+    
+    // add auth handlers
+    decorateAppWithAuthentication(server, dynamoDB);
 
     // add routes
     server.register(routes, { prefix: "/api/v1" });
 
+    
     // start server
     await start({
         server,
@@ -58,5 +58,5 @@ export async function startApp(appConfig: AppConfig): Promise<FastifyInstance> {
     await server.ready();
     server.swagger();
 
-    return server;
+    return [server, services];
 }

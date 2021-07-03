@@ -1,7 +1,6 @@
 import { FastifyInstance, RouteShorthandOptions } from "fastify";
 import { GenericGetOneParams, GenericListQuerystring } from "../../typings/model/common";
-import { User, UserCreationBody, UserUpdateBody } from "../../typings/model/user";
-import { NotFoundError, NotFoundErrorCause } from "../../utils/error";
+import { UserCreationBody, UserUpdateBody } from "../../typings/model/user";
 import schema from "../../schema.json";
 
 const createOptions: RouteShorthandOptions = {
@@ -95,6 +94,8 @@ const editOneOptions: RouteShorthandOptions = {
 };
 
 export default async function (server: FastifyInstance): Promise<void> {
+    server.addHook("preHandler", server.asyncVerifyJWT);
+    
     server.get<{
         Querystring: GenericListQuerystring;
     }>("/", listOptions, async (request, reply) => {
