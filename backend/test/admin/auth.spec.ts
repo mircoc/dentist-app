@@ -24,7 +24,7 @@ describe("Authorization handling", () => {
             await createTable(tableName, dynamoRegion, dynamoEndpoint);
             const resultStart = await startApp({
                 http: {
-                    port: 3000,
+                    port: 4100,
                     host: "localhost",
                 },
                 logger,

@@ -24,7 +24,7 @@ describe("Admin user handling", () => {
             await createTable(tableName, dynamoRegion, dynamoEndpoint);
             const resultStart = await startApp({
                 http: {
-                    port: 3000,
+                    port: 4200,
                     host: "localhost",
                 },
                 logger,
