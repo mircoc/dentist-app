@@ -1,0 +1,52 @@
+{
+  "name": "dentist-appointment-be",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "prebuild": "npm run gen:jsonschema",
+    "build": "tsc -b tsconfig.json",
+    "format": "prettier --write 'src/**/*.ts'",
+    "format:check": "prettier --check 'src/**/*.ts'",
+    "start": "node -r dotenv/config build/index.js",
+    "start:debug": "node  --inspect=0.0.0.0:9232 -r dotenv/config build/index.js",
+    "start:dev": "nodemon -V --watch build --delay 1000ms -x 'npm run start:debug' | pino-pretty -c",
+    "test": "jest",
+    "open:doc": "node -r dotenv/config -e \"const o = require('open'); o(['http://', process.env.HTTP_HOST, ':', process.env.HTTP_PORT, '/api/v1/doc'].join(''))\"",
+    "open:dynamo:server": "AWS_REGION=local AWS_ACCESS_KEY_ID=local AWS_SECRET_ACCESS_KEY=local DYNAMO_ENDPOINT=http://127.0.0.1:8000 dynamodb-admin",
+    "open:dynamo:link": "node -e \"const o = require('open'); o('http://0.0.0.0:8001/')\"",
+    "open:dynamo": "concurrently npm:open:dynamo:*",
+    "gen:jsonschema": "typescript-json-schema --id app ./tsconfig.json --include './src/typings/model/*.ts' --required --out src/schema.json '*'"
+  },
+  "author": "Mirco Cipriani",
+  "license": "ISC",
+  "devDependencies": {
+    "@babel/core": "^7.14.6",
+    "@babel/preset-env": "^7.14.7",
+    "@babel/preset-typescript": "^7.14.5",
+    "@tsconfig/node14": "^1.0.1",
+    "@types/jest": "^26.0.23",
+    "@types/node": "^14.17.3",
+    "@types/pino": "^6.3.8",
+    "@types/supertest": "^2.0.11",
+    "@types/uuid": "^8.3.0",
+    "babel-jest": "^27.0.5",
+    "concurrently": "^6.2.0",
+    "dynamodb-admin": "^4.0.1",
+    "jest": "^27.0.5",
+    "nodemon": "^2.0.7",
+    "pino-pretty": "^5.0.2",
+    "prettier": "2.3.1",
+    "supertest": "^6.1.3",
+    "typescript": "^4.3.4",
+    "typescript-json-schema": "^0.50.1"
+  },
+  "dependencies": {
+    "dotenv": "^10.0.0",
+    "dynamodb-toolbox": "^0.3.4",
+    "fastify": "^3.18.0",
+    "fastify-swagger": "^4.8.0",
+    "pino": "^6.11.3",
+    "uuid": "^8.3.2"
+  }
+}
