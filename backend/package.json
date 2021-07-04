@@ -12,6 +12,7 @@
     "start:debug": "node  --inspect=0.0.0.0:9232 -r dotenv/config build/index.js",
     "start:dev": "nodemon -V --watch build --delay 1000ms -x 'npm run start:debug' | pino-pretty -c",
     "start:docker": "cd docker && docker compose up --remove-orphans",
+    "clean:docker": "cd docker && docker compose down",
     "test": "jest",
     "open:doc": "node -r dotenv/config -e \"const o = require('open'); o(['http://', process.env.HTTP_HOST, ':', process.env.HTTP_PORT, '/api/v1/doc'].join(''))\"",
     "open:dynamo:server": "AWS_REGION=local AWS_ACCESS_KEY_ID=local AWS_SECRET_ACCESS_KEY=local DYNAMO_ENDPOINT=http://127.0.0.1:8000 dynamodb-admin",
