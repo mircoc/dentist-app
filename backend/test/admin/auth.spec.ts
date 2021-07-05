@@ -3,7 +3,8 @@ import { startApp } from "../../src/app";
 import pino from "pino";
 import supertest from "supertest";
 import { dynamoEndpoint, dynamoRegion, testTableName } from "../config";
-import { clearTable, createTable } from "../table";
+import { createTable } from "../table";
+import { clearTable, } from "../tableClear";
 import { ServiceInstances } from "../../src/typings/service";
 
 jest.setTimeout(120_000);

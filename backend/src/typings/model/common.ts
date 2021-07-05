@@ -11,6 +11,9 @@ export interface GenericGetOneParams {
 
 export interface ErrorResponse {
     code: AppErrorOptions["code"];
-    details: AppErrorOptions["details"],
+    details: {
+        cause: string;
+        raw?: object;
+    };
     error: true;
 }

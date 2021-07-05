@@ -2,16 +2,23 @@ import { FastifyInstance, RouteShorthandOptions } from "fastify";
 
 const opts: RouteShorthandOptions = {
     schema: {
+        description: "Create an appointment for a specific date and user",
+        tags: ["admin"],
         response: {
             200: {
                 type: "object",
                 properties: {
-                    pong: {
-                        type: "string",
+                    success: {
+                        type: "boolean",
                     },
                 },
             },
         },
+        security: [
+            {
+                jwtToken: ["admin"],
+            },
+        ],
     },
 };
 

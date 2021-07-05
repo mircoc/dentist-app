@@ -18,7 +18,7 @@ const createOptions: RouteShorthandOptions = {
         },
         security: [
             {
-                apiKey: [],
+                jwtToken: ["admin"],
             },
         ],
     },
@@ -52,7 +52,7 @@ const listOptions: RouteShorthandOptions = {
         },
         security: [
             {
-                apiKey: [],
+                jwtToken: ["admin"],
             },
         ],
     },
@@ -68,7 +68,7 @@ const getOneOptions: RouteShorthandOptions = {
         },
         security: [
             {
-                apiKey: [],
+                jwtToken: ["admin"],
             },
         ],
     },
@@ -87,7 +87,7 @@ const editOneOptions: RouteShorthandOptions = {
         },
         security: [
             {
-                apiKey: [],
+                jwtToken: ["admin"],
             },
         ],
     },
