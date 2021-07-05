@@ -5,6 +5,7 @@
     
     npm i
     npm run build
+    cp .env.example .env
     npm run start:docker
     
 ### Frontend
