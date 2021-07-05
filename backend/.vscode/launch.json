@@ -38,5 +38,24 @@
             "internalConsoleOptions": "neverOpen",
             "port": 9229
         },
+        {
+            "type": "node",
+            "request": "attach",
+            "name": "Attach to Docker",
+            // "preLaunchTask": "tsc-watch",
+            "protocol": "auto",
+            "port": 9232,
+            "restart": true,
+            "localRoot": "${workspaceFolder}",
+            "remoteRoot": "/home/node/app",
+            "outFiles": [
+                "${workspaceFolder}/build/**/*.js"
+            ],
+            "smartStep": true,
+            "skipFiles": [
+                "<node_internals>/**",
+                "node_modules/**"
+            ]
+        },
     ]
 }

@@ -86,12 +86,11 @@ export function LoginForm() {
 
 export const loginErrorText = (error: LoginErrorType) => {
   switch (error) {
-    case LoginErrorType.RESPONSE_ERROR:
-      return 'Server error 😞';
     case LoginErrorType.USERNAME_EMPTY:
       return 'Type your username';
     case LoginErrorType.PASSWORD_EMPTY:
       return 'Type your password';
+    case LoginErrorType.RESPONSE_ERROR:
     case LoginErrorType.INVALID_CREDENTIAL:
       return 'Invalid credentials 🥺';
     default:

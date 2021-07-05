@@ -16,7 +16,7 @@
     "test": "jest",
     "open:doc": "node -r dotenv/config -e \"const o = require('open'); o(['http://', process.env.HTTP_HOST, ':', process.env.HTTP_PORT, '/api/v1/doc'].join(''))\"",
     "seed": "ts-node test/seed.ts",
-    "open:dynamo:server": "AWS_REGION=local AWS_ACCESS_KEY_ID=local AWS_SECRET_ACCESS_KEY=local DYNAMO_ENDPOINT=http://127.0.0.1:8000 dynamodb-admin",
+    "open:dynamo:server": "AWS_REGION=eu-central-1 AWS_ACCESS_KEY_ID=local AWS_SECRET_ACCESS_KEY=local DYNAMO_ENDPOINT=http://127.0.0.1:8000 dynamodb-admin",
     "open:dynamo:link": "node -e \"const o = require('open'); o('http://0.0.0.0:8001/')\"",
     "open:dynamo": "concurrently npm:open:dynamo:*",
     "gen:jsonschema": "typescript-json-schema --id app ./tsconfig.json --include './src/typings/model/*.ts' --required --out src/schema.json '*'"
