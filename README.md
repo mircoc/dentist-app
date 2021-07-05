@@ -3,6 +3,7 @@
 ## Quick start
 ### Backend
     
+    cd backend
     npm i
     npm run build
     cp .env.example .env
@@ -10,6 +11,7 @@
     
 ### Frontend
 
+    cd frontend
     yarn install
     yarn start
 
