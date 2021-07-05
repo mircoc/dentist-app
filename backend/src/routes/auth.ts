@@ -15,6 +15,7 @@ const loginOptions: RouteShorthandOptions = {
             401: { ...schema.definitions.ErrorResponse },
             500: { ...schema.definitions.ErrorResponse },
         },
+        security: [],
     },
 };
 
@@ -26,6 +27,11 @@ const logoutOptions: RouteShorthandOptions = {
             200: { ...schema.definitions.LogoutResponse },
             500: { ...schema.definitions.ErrorResponse },
         },
+        security: [
+            {
+                jwtToken: ["admin", "user"],
+            },
+        ],
     },
 };
 
