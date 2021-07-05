@@ -19,15 +19,18 @@ export class DynamoDB {
     private documentClient: ddb.DocumentClient;
 
     constructor(private logger: Logger, private options: DynamoDBOptions) {
-        // AWS.config.update({
-        //     region: options.region,
-        // });
+        AWS.config.update({
+            region: options.region,
+            accessKeyId: "local", // FIXME: get from conf
+            secretAccessKey: "local", // FIXME: get from conf
+        });
         // instantiate DocumentClient
         this.documentClient = new ddb.DocumentClient({
             region: options.region,
             endpoint: options.endpoint,
         });
         this.table = this.getTable(options.tableName);
+        this.logger.info({ options }, `Init done ${JSON.stringify(options)}`);
     }
 
     private getCommonAttributes(): EntityAttributes {
@@ -38,14 +41,14 @@ export class DynamoDB {
 
     private handleAlreadyExistsError(err: any, duplicateItem: string): never {
         if (err.code === "ConditionalCheckFailedException") {
-            this.logger.info(`Item already exists: ${duplicateItem}`, { err, duplicateItem });
+            this.logger.info({ err, duplicateItem }, `Item already exists: ${duplicateItem}`);
             throw new AlreadyExistsError({ err, duplicateItem });
         }
         throw err;
     }
     private handleNotFoundError(err: any, itemKey: string): never {
         if (err.code === "ConditionalCheckFailedException") {
-            this.logger.info(`Item not found: ${itemKey}`, { err, itemKey });
+            this.logger.info( { err, itemKey }, `Item not found: ${itemKey}`);
             throw new NotFoundError(
                 { cause: NotFoundErrorCause.OBJECT_NOT_FOUND },
                 { err, itemKey },

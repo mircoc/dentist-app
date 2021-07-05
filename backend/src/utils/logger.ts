@@ -13,6 +13,7 @@ const pinoLogger = pino({
         // }
     },
     enabled: !isInTestRunner(FeatureDisableInTest.LOGGING),
+    level: "debug",
 });
 
 export function getLogger(module: string): pino.Logger {

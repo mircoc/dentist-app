@@ -6,10 +6,11 @@ services:
             - ../.env
         environment:
             - DYNAMODB_ENDPOINT=http://dynamodb:8000
+            - DYNAMODB_REGION=eu-central-1
             - AWS_ACCESS_KEY_ID=local
             - AWS_SECRET_ACCESS_KEY=local
             - AWS_CONFIG_FILE=
-            - AWS_DEFAULT_REGION=local
+            - AWS_REGION=eu-central-1
         build:
             context: ..
             dockerfile:  $PWD/Dockerfile

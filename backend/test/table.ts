@@ -1,6 +1,11 @@
-import { DynamoDB } from "aws-sdk";
+import AWS, { DynamoDB } from "aws-sdk";
 
 export async function createTable(tableName: string, region: string, endpoint: string) {
+    AWS.config.update({
+        region,
+        accessKeyId: "local",
+        secretAccessKey: "local",
+    });
     const dyn = new DynamoDB({ region, endpoint });
     try {
         await dyn
